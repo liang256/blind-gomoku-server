@@ -18,7 +18,12 @@ const io = new Server(server, {
 
 io.on("connection", (socket) => {
     console.log(`User ${socket.id} connected`);
-})
+
+    socket.on("message", (data) => {
+        console.log("received", data);
+        socket.broadcast.emit("message", data);
+    });
+});
 
 server.listen(9000, () => {
     console.log("Server Serving on http://localhost:9000...");
