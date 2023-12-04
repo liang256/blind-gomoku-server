@@ -5,7 +5,7 @@ class CellState {
     }
 }
 
-class Gokume {
+export default class Gokume {
     constructor(width, height) {
         this.width = width;
         this.height = height;
