@@ -17,24 +17,24 @@ class Gokume {
 
     initializeArray(width, height, initialValue) {
         const newArray = [];
-    
-        for (let i = 0; i < height; i++) {
+
+        for (let x = 0; x < height; x++) {
             const row = [];
-            for (let j = 0; j < width; j++) {
+            for (let y = 0; y < width; y++) {
                 row.push(initialValue);
             }
             newArray.push(row);
         }
-    
+
         return newArray;
     }
 
-    checkBounds(row, col) {
-        return row >= 0 && row < this.height && col >= 0 && col < this.width;
+    checkBounds(x, y) {
+        return x >= 0 && x < this.height && y >= 0 && y < this.width;
     }
 
     setCell(x, y, cellState) {
-        if (! this.checkBounds(x, y)) {
+        if (!this.checkBounds(x, y)) {
             throw RangeError("x or y is out of range.");
         }
         this.board[x][y] = cellState;
@@ -46,12 +46,12 @@ class Gokume {
         }
 
         const color = this.currPlayerIdx === 0 ? "#000000" : "#FFFFFF";
-        cellstate = new CellState(player, color);
+        const cellState = new CellState(player, color);
         this.setCell(x, y, cellState);
     }
 
     reset() {
-        this.board = this.initializeArray(this.width, this.height, null)
+        this.board = this.initializeArray(this.width, this.height, null);
     }
 
     canStart() {
@@ -66,30 +66,30 @@ class Gokume {
     }
 
     rotatePlayer() {
-        this.currPlayerIdx = this.currPlayerIdx === 0 ? 1 : 0;
+        this.currPlayerIdx = (this.currPlayerIdx + 1) % this.players.length;
     }
 
     hasWinner() {
-        return this.winner == 0 || this.winner == 1;
+        return this.winner === 0 || this.winner === 1;
     }
 
     getContinueCells(x, y) {
         if (this.board[x][y] === null) {
-            throw Error(`Board (${x}, ${y}) is unoccupied.`)
+            throw Error(`Board (${x}, ${y}) is unoccupied.`);
         }
 
-        const isValidCell = (row, col, player) =>
-            this.checkBounds(row, col) && this.board[row][col] !== null && this.board[row][col].player === player;
+        const isValidCell = (newX, newY, player) =>
+            this.checkBounds(newX, newY) && this.board[newX][newY] !== null && this.board[newX][newY].player === player;
 
         const getCellsInDirection = (dirX, dirY) => {
             const buff = [[x, y]];
 
             for (let i = 1; i < 5; i++) {
-                const newRow = x + i * dirX;
-                const newCol = y + i * dirY;
+                const newX = x + i * dirX;
+                const newY = y + i * dirY;
 
-                if (isValidCell(newRow, newCol, this.board[x][y].player)) {
-                    buff.push([newRow, newCol]);
+                if (isValidCell(newX, newY, this.board[x][y].player)) {
+                    buff.push([newX, newY]);
                 } else {
                     break;
                 }
