@@ -134,18 +134,13 @@ io.on("connection", (socket) => {
             return;
         }
 
-        if (games[data.room].players.indexOf(data.player) === -1) {
-            socket.emit("error_message", `${data.player} is not a player of game ${data.room}.`);
-            return;
-        }
-
         games[data.room].reset();
 
         io.to(data.room).emit("render_board", games[data.room].getBoardColors());
 
         const msg = `Room ${data.room} has been reset by ${data.player}`;
         console.log(msg);
-        io.to(data.room).emit(msg);
+        io.to(data.room).emit("message", msg);
     });
 });
 
