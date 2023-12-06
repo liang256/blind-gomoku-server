@@ -5,6 +5,18 @@ class CellState {
     }
 }
 
+const GameState = {
+    WAITING: 'waiting',
+    PLAYING: 'playing',
+    GAME_OVER: 'game_over'
+};
+
+const Color = {
+    BLACK: '#000000',
+    WHITE: '#FFFFFF',
+    GREY: '#808080'
+};
+
 export default class Gokume {
     constructor(width, height) {
         this.width = width;
@@ -13,6 +25,7 @@ export default class Gokume {
         this.currPlayerIdx = 0;
         this.winner = -1;
         this.board = this.initializeArray(width, height, null);
+        this.state = GameState.WAITING;
     }
 
     initializeArray(width, height, initialValue) {
@@ -45,9 +58,11 @@ export default class Gokume {
             throw Error(`Fail to set cell (${x}, ${y}) since it is not ${cellState.player}'s turn`);
         }
 
-        const color = this.currPlayerIdx === 0 ? "#000000" : "#FFFFFF";
+        const color = (this.currPlayerIdx === 0) ? Color.BLACK : Color.WHITE;
         const cellState = new CellState(player, color);
         this.setCell(x, y, cellState);
+
+        this.rotatePlayer();
     }
 
     reset() {
@@ -59,10 +74,33 @@ export default class Gokume {
     }
 
     addPlayer(playerId) {
-        if (this.players.length === 2) {
+        if (this.isFull()) {
             throw Error("Game room is full.");
         }
         this.players.push(playerId);
+    }
+
+    removePlayer(playerId) {
+        const toRemove = this.players.indexOf(playerId);
+        if (toRemove === -1) {
+            throw Error(`Player ${playerId} does not exist.`);
+        }
+        
+        if (this.currPlayerIdx === toRemove) {
+            this.rotatePlayer();
+        }
+
+        this.players.splice(toRemove, 1);
+
+        this.state = GameState.GAME_OVER;
+    }
+
+    getCurrPlayer() {
+        return this.players[this.currPlayerIdx];
+    }
+
+    isFull() {
+        return this.players.length === 2;
     }
 
     rotatePlayer() {
@@ -117,5 +155,9 @@ export default class Gokume {
         }
 
         return res;
+    }
+
+    getBoardColors() {
+        return this.board.map(row => row.map(cell => (cell && cell.color ? cell.color : Color.GREY)));
     }
 }
