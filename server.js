@@ -3,7 +3,6 @@ import express from "express";
 import cors from "cors";
 import http from "http";
 import { Server } from "socket.io";
-import { runInNewContext } from 'vm';
 
 const app = express();
 
@@ -25,9 +24,8 @@ io.on("connection", (socket) => {
     console.log(`User ${socket.id} connected`);
 
     socket.on('disconnect', () => {
-        if (socketToRoom.hasOwnProperty(socket.id)) {
-            games[socketToRoom[socket.id]].removePlayer(socket.id);
-        }
+        io.in(socketToRoom[socket.id]).disconnectSockets();
+        delete games[socketToRoom[socket.id]];
     });
 
     socket.on("join_room", (room) => {
@@ -95,7 +93,7 @@ io.on("connection", (socket) => {
         }
 
         try {
-            games[data.room].putPiece(newX, newY, data.player);
+            games[data.room].putPiece(newX, newY, data.player, data.color);
         } catch (error) {
             socket.emit("error_message", error.message);
             console.log(`Failed to put piece. ${error.message}. payload: ${data}.`);

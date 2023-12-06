@@ -53,12 +53,11 @@ export default class Gokume {
         this.board[x][y] = cellState;
     }
 
-    putPiece(x, y, player) {
+    putPiece(x, y, player, color) {
         if (this.players[this.currPlayerIdx] !== player) {
             throw Error(`Fail to set cell (${x}, ${y}) since it is not ${cellState.player}'s turn`);
         }
 
-        const color = (this.currPlayerIdx === 0) ? Color.BLACK : Color.WHITE;
         const cellState = new CellState(player, color);
         this.setCell(x, y, cellState);
 
