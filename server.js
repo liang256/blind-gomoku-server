@@ -69,18 +69,21 @@ io.on("connection", (socket) => {
     });
 
     socket.on("put_piece", (data) => {
+        console.log(`received put piece data: ${JSON.stringify(data)}`);
         if (!games.hasOwnProperty(data.room)) {
             socket.emit("error_message", `${data.room} does not exist.`);
             return;
         }
 
         if(games[data.room].state !== 'playing') {
-            socket.emit("error_message", `The game is ${games[data.room].state}.`)
+            socket.emit("error_message", `The game is ${games[data.room].state}.`);
+            console.log(`The game is ${games[data.room].state}.`);
             return;
         }
 
         if (games[data.room].getCurrPlayer() !== socket.id) {
             socket.emit("error_message", "It's not your turn.");
+            console.log(`It's not ${socket.id}'s turn.`);
             return;
         }
 
@@ -89,6 +92,7 @@ io.on("connection", (socket) => {
 
         if (games[data.room].board[newX][newY] !== null) {
             socket.emit("error_message", `Please choose another place.`);
+            console.log(`(${newX}, ${newY}) is used.`);
             return;
         }
 
@@ -102,7 +106,21 @@ io.on("connection", (socket) => {
         
         io.to(data.room).emit("render_board", games[data.room].getBoardColors());
 
-        const continueCells = games[data.room].getContinueCells(data.x, data.y);
+        console.log("---board---");
+        for (const row of games[data.room].board) {
+            const buf = [];
+            for (const state of row) {
+                if (!state) {
+                    buf.push(-1);
+                    continue;
+                }
+                buf.push(games[data.room].players.indexOf(state.player));
+            }
+            console.log(JSON.stringify(buf));
+        }
+
+        const continueCells = games[data.room].getContinueCells(newX, newY);
+        console.log(`continue cells: ${JSON.stringify(continueCells)}`);
 
         if (continueCells.length >= 5) {
             io.to(data.room).emit("message", `Winner is ${socket.id}`);
@@ -124,6 +142,10 @@ io.on("connection", (socket) => {
         games[data.room].reset();
 
         io.to(data.room).emit("render_board", games[data.room].getBoardColors());
+
+        const msg = `Room ${data.room} has been reset by ${data.player}`;
+        console.log(msg);
+        io.to(data.room).emit(msg);
     });
 });
 
