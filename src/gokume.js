@@ -66,6 +66,9 @@ export default class Gokume {
 
     reset() {
         this.board = this.initializeArray(this.width, this.height, null);
+        this.currPlayerIdx = 0;
+        this.winner = -1;
+        this.state = this.canStart() ? GameState.PLAYING : GameState.WAITING;
     }
 
     canStart() {
