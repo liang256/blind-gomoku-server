@@ -103,7 +103,20 @@ io.on("connection", (socket) => {
             console.log(`Failed to put piece. ${error.message}. payload: ${data}.`);
             return;
         }
-        
+
+        const continueCells = games[data.room].getContinueCells(newX, newY);
+        console.log(`continue cells: ${JSON.stringify(continueCells)}`);
+
+        if (continueCells.length >= 5) {
+            io.to(data.room).emit("message", `Winner is ${socket.id}`);
+            games[data.room].state = 'game_over';
+
+            for (const [x, y] of continueCells) {
+                const continueColor = '#000000';
+                games[data.room].board[x][y].color = continueColor;
+            }
+        }
+
         io.to(data.room).emit("render_board", games[data.room].getBoardColors());
 
         console.log("---board---");
@@ -117,14 +130,6 @@ io.on("connection", (socket) => {
                 buf.push(games[data.room].players.indexOf(state.player));
             }
             console.log(JSON.stringify(buf));
-        }
-
-        const continueCells = games[data.room].getContinueCells(newX, newY);
-        console.log(`continue cells: ${JSON.stringify(continueCells)}`);
-
-        if (continueCells.length >= 5) {
-            io.to(data.room).emit("message", `Winner is ${socket.id}`);
-            games[data.room].state = 'game_over';
         }
     });
 
