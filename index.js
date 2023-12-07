@@ -25,7 +25,14 @@ io.on("connection", (socket) => {
 
     socket.on('disconnect', () => {
         io.in(socketToRoom[socket.id]).disconnectSockets();
-        delete games[socketToRoom[socket.id]];
+
+        const room = socketToRoom[socket.id];
+        const players = games[socketToRoom[socket.id]].players;
+        for (const player of players) {
+            delete socketToRoom[player];
+        }
+
+        delete games[room];
     });
 
     socket.on("join_room", (room) => {
@@ -147,6 +154,14 @@ io.on("connection", (socket) => {
         console.log(msg);
         io.to(data.room).emit("message", msg);
     });
+});
+
+app.get('/games', (req, res) => {
+    res.send(JSON.stringify(games));
+});
+
+app.get('/socket-to-room', (req, res) => {
+    res.send(JSON.stringify(socketToRoom));
 });
 
 server.listen(9000, () => {
