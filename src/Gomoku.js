@@ -17,7 +17,7 @@ const Color = {
     GREY: '#808080'
 };
 
-export default class Gokume {
+export default class Gomoku {
     constructor(width, height) {
         this.width = width;
         this.height = height;

@@ -1,4 +1,4 @@
-import Gokume from './src/Gokume.js';
+import Gomoku from './src/Gomoku.js';
 import express from "express";
 import cors from "cors";
 import http from "http";
@@ -42,7 +42,7 @@ io.on("connection", (socket) => {
         }
 
         if (!games.hasOwnProperty(room)) {
-            games[room] = new Gokume(10, 10);
+            games[room] = new Gomoku(10, 10);
             socket.emit("message", `Created room ${games[room]}`);
         }
 

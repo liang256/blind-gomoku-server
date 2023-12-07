@@ -1,11 +1,11 @@
 import { expect } from 'chai';
-import Gokume from '../src/Gokume.js'; // Adjust the path accordingly
+import Gomoku from '../src/Gomoku.js'; // Adjust the path accordingly
 
-describe('Gokume', () => {
+describe('Gomoku', () => {
     let game;
 
     beforeEach(() => {
-        game = new Gokume(7, 6); // Adjust the dimensions as needed
+        game = new Gomoku(7, 6); // Adjust the dimensions as needed
     });
 
     it('should put a piece on the board', () => {
