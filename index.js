@@ -3,6 +3,9 @@ import express from "express";
 import cors from "cors";
 import http from "http";
 import { Server } from "socket.io";
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const app = express();
 
@@ -164,6 +167,7 @@ app.get('/socket-to-room', (req, res) => {
     res.send(JSON.stringify(socketToRoom));
 });
 
-server.listen(9000, () => {
-    console.log("Server Serving on http://localhost:9000...");
+const port = process.env.PORT || 9000;
+server.listen(port, () => {
+    console.log(`Server Serving on http://localhost:${port}...`);
 })
